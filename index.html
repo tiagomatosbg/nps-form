@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa de Satisfação NPS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        .rating {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .rating input {
+            display: none;
+        }
+        .rating label {
+            width: 35px;
+            height: 35px;
+            background: #ddd;
+            margin: 0 5px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .rating input:checked ~ label {
+            background: #28a745;
+            color: white;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Pesquisa de Satisfação NPS</h2>
+        <p>De 0 a 10, o quanto você recomendaria nossa empresa?</p>
+        <div class="rating">
+            <input type="radio" name="nps" id="nps-0" value="0"><label for="nps-0">0</label>
+            <input type="radio" name="nps" id="nps-1" value="1"><label for="nps-1">1</label>
+            <input type="radio" name="nps" id="nps-2" value="2"><label for="nps-2">2</label>
+            <input type="radio" name="nps" id="nps-3" value="3"><label for="nps-3">3</label>
+            <input type="radio" name="nps" id="nps-4" value="4"><label for="nps-4">4</label>
+            <input type="radio" name="nps" id="nps-5" value="5"><label for="nps-5">5</label>
+            <input type="radio" name="nps" id="nps-6" value="6"><label for="nps-6">6</label>
+            <input type="radio" name="nps" id="nps-7" value="7"><label for="nps-7">7</label>
+            <input type="radio" name="nps" id="nps-8" value="8"><label for="nps-8">8</label>
+            <input type="radio" name="nps" id="nps-9" value="9"><label for="nps-9">9</label>
+            <input type="radio" name="nps" id="nps-10" value="10"><label for="nps-10">10</label>
+        </div>
+        <textarea id="feedback" placeholder="Nos diga o motivo da sua nota..."></textarea>
+        <button onclick="submitForm()">Enviar Resposta</button>
+    </div>
+
+    <script>
+        function submitForm() {
+            const rating = document.querySelector('input[name="nps"]:checked');
+            const feedback = document.getElementById('feedback').value;
+
+            if (!rating) {
+                alert('Por favor, selecione uma nota!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("nps", rating.value);
+            formData.append("feedback", feedback);
+
+            fetch("https://script.google.com/macros/s/AKfycbxM2csrr8u4DcQ7NOeMIjEa8g4RePf0bnHCBQz3ACN22Nct4BVTNh82ZhFnawRd_E7YGg/exec", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert('Obrigado pela sua resposta!');
+            })
+            .catch(error => {
+                alert('Erro ao enviar. Tente novamente.');
+            });
+        }
+    </script>
+</body>
+</html>
