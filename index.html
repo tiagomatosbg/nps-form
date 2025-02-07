@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa de Satisfação NPS</title>
+    <title>Pesquisa de Satisfação - Real Supermercado Centro</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,8 +22,12 @@
             width: 400px;
             text-align: center;
         }
+        .logo {
+            width: 150px;
+            margin-bottom: 10px;
+        }
         h2 {
-            color: #333;
+            color: #ff6600; /* Laranja */
         }
         .rating {
             display: flex;
@@ -46,8 +50,8 @@
             font-weight: bold;
             transition: 0.3s;
         }
-        .rating input:checked ~ label {
-            background: #28a745;
+        .rating label.selected {
+            background: #28a745; /* Verde */
             color: white;
         }
         textarea {
@@ -58,7 +62,7 @@
             border: 1px solid #ccc;
         }
         button {
-            background: #007bff;
+            background: #ff6600; /* Laranja */
             color: white;
             padding: 10px;
             border: none;
@@ -67,17 +71,23 @@
             cursor: pointer;
             font-size: 16px;
             border-radius: 5px;
+            transition: background 0.3s;
         }
         button:hover {
-            background: #0056b3;
+            background: #cc5500; /* Laranja mais escuro */
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Pesquisa de Satisfação NPS</h2>
-        <p>De 0 a 10, o quanto você recomendaria nossa empresa?</p>
-        <div class="rating">
+        <img src="images/logo-real-supermercado.png" alt="Real Supermercado Centro" class="logo">
+        <h2>Ajude-nos a melhorar!</h2>
+        <p>De 0 a 10, o quanto você recomendaria o Real Supermercado Centro para amigos e familiares?</p>
+        <div class="rating" id="ratingContainer">
             <input type="radio" name="nps" id="nps-0" value="0"><label for="nps-0">0</label>
             <input type="radio" name="nps" id="nps-1" value="1"><label for="nps-1">1</label>
             <input type="radio" name="nps" id="nps-2" value="2"><label for="nps-2">2</label>
@@ -90,19 +100,37 @@
             <input type="radio" name="nps" id="nps-9" value="9"><label for="nps-9">9</label>
             <input type="radio" name="nps" id="nps-10" value="10"><label for="nps-10">10</label>
         </div>
-        <textarea id="feedback" placeholder="Nos diga o motivo da sua nota..."></textarea>
-        <button onclick="submitForm()">Enviar Resposta</button>
+        <textarea id="feedback" placeholder="Nos conte o motivo da sua nota..."></textarea>
+        <button onclick="submitForm()">Enviar Feedback</button>
     </div>
 
     <script>
+document.querySelectorAll(".rating input").forEach((radio) => {
+    radio.addEventListener("change", function() {
+        let selectedValue = parseInt(this.value);
+        document.querySelectorAll(".rating label").forEach((label, index) => {
+            if (index <= selectedValue) {
+                label.classList.add("selected");
+            } else {
+                label.classList.remove("selected");
+            }
+        });
+    });
+});
+
 function submitForm() {
     const rating = document.querySelector('input[name="nps"]:checked');
     const feedback = document.getElementById('feedback').value;
+    const button = document.querySelector("button");
+    const container = document.querySelector(".container");
 
     if (!rating) {
-        alert('Por favor, selecione uma nota!');
+        alert('Por favor, escolha uma nota!');
         return;
     }
+
+    button.disabled = true;
+    button.textContent = "Enviando...";
 
     const formData = new FormData();
     formData.append("nps", rating.value);
@@ -116,14 +144,15 @@ function submitForm() {
     .then(response => response.text())
     .then(result => {
         console.log("Resposta do servidor:", result);
-        alert(result);
+        container.innerHTML = `<h2 style="color: #28a745;">Obrigado pelo seu feedback!</h2><p>Seu retorno é muito importante para nós! 😊</p>`;
     })
     .catch(error => {
         console.error("Erro:", error);
-        alert('Erro ao enviar. Tente novamente.');
+        alert('Ops! Algo deu errado. Tente novamente.');
+        button.disabled = false;
+        button.textContent = "Enviar Feedback";
     });
 }
-
     </script>
 </body>
 </html>
