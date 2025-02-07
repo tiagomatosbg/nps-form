@@ -108,7 +108,7 @@ function submitForm() {
     formData.append("nps", rating.value);
     formData.append("feedback", feedback);
 
-    fetch("https://script.google.com/macros/library/d/1DEwPkAOEoya9A36_JN1lRcd3SV5fIPb_jXbnzCRXooZlQqhfuOPMY0yP/4", {
+    fetch("https://script.google.com/macros/s/AKfycbwmMqnpb01t2Cajm5HSgmSO9iv3GW-GZYFDyVokmgvzJfd5r6EN3dXg57X8zcY_LAJHTQ/exec", {
         method: "POST",
         body: formData,
         mode: "cors"
