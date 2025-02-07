@@ -95,31 +95,34 @@
     </div>
 
     <script>
-        function submitForm() {
-            const rating = document.querySelector('input[name="nps"]:checked');
-            const feedback = document.getElementById('feedback').value;
+function submitForm() {
+    const rating = document.querySelector('input[name="nps"]:checked');
+    const feedback = document.getElementById('feedback').value;
 
-            if (!rating) {
-                alert('Por favor, selecione uma nota!');
-                return;
-            }
+    if (!rating) {
+        alert('Por favor, selecione uma nota!');
+        return;
+    }
 
-            const formData = new FormData();
-            formData.append("nps", rating.value);
-            formData.append("feedback", feedback);
+    const formData = new FormData();
+    formData.append("nps", rating.value);
+    formData.append("feedback", feedback);
 
-            fetch("https://script.google.com/macros/s/AKfycbzm8lMmCWlXFYlHrWVM6TwatTFknvrw7rCED7qR7Yj3ktsPsScZJq2U-rkZ14ByshULGQ/exec", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.text())
-            .then(result => {
-                alert('Obrigado pela sua resposta!');
-            })
-            .catch(error => {
-                alert('Erro ao enviar. Tente novamente.');
-            });
-        }
+    fetch("https://script.google.com/macros/s/AKfycbzm8lMmCWlXFYlHrWVM6TwatTFknvrw7rCED7qR7Yj3ktsPsScZJq2U-rkZ14ByshULGQ/exec", {
+        method: "POST",
+        body: formData,
+        mode: "cors"
+    })
+    .then(response => response.text())
+    .then(result => {
+        console.log("Resposta do servidor:", result);
+        alert(result);
+    })
+    .catch(error => {
+        console.error("Erro:", error);
+        alert('Erro ao enviar. Tente novamente.');
+    });
+}
     </script>
 </body>
 </html>
