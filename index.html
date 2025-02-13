@@ -122,10 +122,21 @@
                 transform: rotate(360deg);
             }
         }
+        .thank-you {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .thank-you h2 {
+            color: #28a745;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="surveyContainer">
         <img src="images/logo-real-supermercado.webp" alt="Real Supermercado Centro" class="logo">
         <h2>Queremos ouvir você! 😊</h2>
         <p>De 0 a 10, o quanto você recomendaria o <strong>Real Supermercado Centro</strong> para amigos e familiares?</p>
@@ -156,33 +167,29 @@
     <script>
         document.querySelectorAll(".rating input").forEach((radio) => {
             radio.addEventListener("change", function() {
-                document.querySelectorAll(".rating label").forEach(label => label.classList.remove("selected", "detractor", "neutral", "promoter"));
-                
-                const selectedLabel = document.querySelector(`label[for="nps-${this.value}"]`);
-                selectedLabel.classList.add("selected");
-                if (this.value <= 6) selectedLabel.classList.add("detractor");
-                else if (this.value <= 8) selectedLabel.classList.add("neutral");
-                else selectedLabel.classList.add("promoter");
+                const selectedValue = parseInt(this.value);
+                document.querySelectorAll(".rating label").forEach((label, index) => {
+                    label.classList.remove("selected", "detractor", "neutral", "promoter");
+                    if (index <= selectedValue) {
+                        label.classList.add(
+                            selectedValue <= 6 ? "detractor" :
+                            selectedValue <= 8 ? "neutral" :
+                            "promoter"
+                        );
+                    }
+                });
+
+                document.getElementById("ratingMessage").innerText =
+                    selectedValue <= 6 ? "Poxa! O que podemos melhorar?" :
+                    selectedValue <= 8 ? "Agradecemos seu feedback! Como podemos te surpreender?" :
+                    "Obrigado pela recomendação! 😊";
             });
         });
 
         function submitForm() {
-            const rating = document.querySelector('input[name="nps"]:checked');
-            const feedback = document.getElementById("feedback").value;
-            const button = document.querySelector("button");
-            const spinner = document.querySelector(".spinner");
-
-            if (!rating) {
-                alert("Por favor, escolha uma nota!");
-                return;
-            }
-
-            button.disabled = true;
-            spinner.style.display = "inline-block";
-
             const formData = new FormData();
-            formData.append("nps", rating.value);
-            formData.append("feedback", feedback);
+            formData.append("nps", document.querySelector('input[name="nps"]:checked').value);
+            formData.append("feedback", document.getElementById("feedback").value);
 
             fetch("https://script.google.com/macros/s/AKfycbxT_ychbsiR4Mt_6CF0EPUplGwaLiHcWkzgDy00mPj5nHkE9Z1fLIdJCaWEVPoX8_Z-uQ/exec", {
                 method: "POST",
