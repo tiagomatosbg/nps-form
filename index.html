@@ -23,6 +23,7 @@
             width: 100%;
             max-width: 450px;
             text-align: center;
+            position: relative;
         }
         .logo {
             width: 120px;
@@ -51,7 +52,6 @@
         .rating label {
             width: 40px;
             height: 40px;
-            background: #ddd;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -60,11 +60,16 @@
             font-weight: bold;
             font-size: 16px;
             transition: 0.3s;
+            background: #ddd;
+            color: black;
         }
         .rating label.selected {
-            background: #28a745;
             color: white;
         }
+        .detractor { background: #ff4d4d !important; }
+        .neutral { background: #ffcc00 !important; }
+        .promoter { background: #28a745 !important; }
+
         textarea {
             width: calc(100% - 20px);
             padding: 10px;
@@ -73,6 +78,11 @@
             border: 1px solid #ccc;
             resize: none;
             font-size: 14px;
+        }
+        #ratingMessage {
+            font-size: 14px;
+            margin-top: 10px;
+            color: #333;
         }
         button {
             background: #ff6600;
@@ -85,6 +95,7 @@
             font-size: 16px;
             border-radius: 5px;
             transition: background 0.3s;
+            position: relative;
         }
         button:hover {
             background: #cc5500;
@@ -93,18 +104,22 @@
             background: #ccc;
             cursor: not-allowed;
         }
-
-        @media (max-width: 480px) {
-            .rating label {
-                width: 35px;
-                height: 35px;
-                font-size: 14px;
-            }
-            .container {
-                padding: 15px;
-            }
-            textarea {
-                width: 100%;
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid white;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
             }
         }
     </style>
@@ -133,37 +148,37 @@
             </div>
         </div>
 
+        <p id="ratingMessage"></p>
         <textarea id="feedback" placeholder="Nos conte o motivo da sua nota..."></textarea>
-        <button onclick="submitForm()">Enviar Feedback</button>
+        <button onclick="submitForm()">Enviar Feedback <div class="spinner"></div></button>
     </div>
 
     <script>
         document.querySelectorAll(".rating input").forEach((radio) => {
             radio.addEventListener("change", function() {
-                let selectedValue = parseInt(this.value);
-                document.querySelectorAll(".rating label").forEach((label, index) => {
-                    if (index <= selectedValue) {
-                        label.classList.add("selected");
-                    } else {
-                        label.classList.remove("selected");
-                    }
-                });
+                document.querySelectorAll(".rating label").forEach(label => label.classList.remove("selected", "detractor", "neutral", "promoter"));
+                
+                const selectedLabel = document.querySelector(`label[for="nps-${this.value}"]`);
+                selectedLabel.classList.add("selected");
+                if (this.value <= 6) selectedLabel.classList.add("detractor");
+                else if (this.value <= 8) selectedLabel.classList.add("neutral");
+                else selectedLabel.classList.add("promoter");
             });
         });
 
         function submitForm() {
             const rating = document.querySelector('input[name="nps"]:checked');
-            const feedback = document.getElementById('feedback').value;
+            const feedback = document.getElementById("feedback").value;
             const button = document.querySelector("button");
-            const container = document.querySelector(".container");
+            const spinner = document.querySelector(".spinner");
 
             if (!rating) {
-                alert('Por favor, escolha uma nota!');
+                alert("Por favor, escolha uma nota!");
                 return;
             }
 
             button.disabled = true;
-            button.textContent = "Enviando...";
+            spinner.style.display = "inline-block";
 
             const formData = new FormData();
             formData.append("nps", rating.value);
@@ -171,19 +186,10 @@
 
             fetch("https://script.google.com/macros/s/AKfycbxT_ychbsiR4Mt_6CF0EPUplGwaLiHcWkzgDy00mPj5nHkE9Z1fLIdJCaWEVPoX8_Z-uQ/exec", {
                 method: "POST",
-                body: formData,
-                mode: "cors"
-            })
-            .then(response => response.text())
-            .then(result => {
-                console.log("Resposta do servidor:", result);
-                container.innerHTML = `<h2 style="color: #28a745;">Obrigado pelo seu feedback!</h2><p>Seu retorno é muito importante para nós! 😊</p>`;
-            })
-            .catch(error => {
-                console.error("Erro:", error);
-                alert('Ops! Algo deu errado. Tente novamente.');
-                button.disabled = false;
-                button.textContent = "Enviar Feedback";
+                body: formData
+            }).then(() => {
+                alert("🎉 Obrigado pelo seu feedback! 🎉");
+                setTimeout(() => { window.close(); }, 3000);
             });
         }
     </script>
