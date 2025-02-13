@@ -161,7 +161,13 @@
 
         <p id="ratingMessage"></p>
         <textarea id="feedback" placeholder="Nos conte o motivo da sua nota..."></textarea>
-        <button onclick="submitForm()">Enviar Feedback <div class="spinner"></div></button>
+        <button id="submitButton" onclick="submitForm()">Enviar Feedback <div class="spinner"></div></button>
+    </div>
+
+    <div class="thank-you" id="thankYouContainer">
+        <h2>🎉 Obrigado pelo seu feedback! 🎉</h2>
+        <p>Seu retorno é muito importante para continuarmos melhorando.</p>
+        <p>Estamos sempre buscando oferecer a melhor experiência para você! 😊</p>
     </div>
 
     <script>
@@ -187,6 +193,9 @@
         });
 
         function submitForm() {
+            document.getElementById("surveyContainer").style.display = "none";
+            document.getElementById("thankYouContainer").style.display = "block";
+
             const formData = new FormData();
             formData.append("nps", document.querySelector('input[name="nps"]:checked').value);
             formData.append("feedback", document.getElementById("feedback").value);
@@ -195,7 +204,6 @@
                 method: "POST",
                 body: formData
             }).then(() => {
-                alert("🎉 Obrigado pelo seu feedback! 🎉");
                 setTimeout(() => { window.close(); }, 3000);
             });
         }
